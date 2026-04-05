@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -174,6 +174,10 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- Keep cursor centered when moving up/down
+vim.keymap.set('n', 'j', 'jzz')
+vim.keymap.set('n', 'k', 'kzz')
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
