@@ -1,0 +1,22 @@
+# Neovim
+undo/
+swap/
+backup/
+shada/
+tags
+.netrwhist
+*.spl
+*.sug
+lazy-lock.json
+
+# LSP / Language Servers
+.null-ls_*
+.luarc.json
+.nvim.lua
+
+# Build / Temp
+build/
+dist/
+node_modules/
+.DS_Store
+*.log
