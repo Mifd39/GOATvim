@@ -22,10 +22,10 @@ fi
 echo "Installing goatvim (linking $GOATVIM_REPO_DIR to $NVIM_CONFIG_DIR)..."
 ln -s "$GOATVIM_REPO_DIR" "$NVIM_CONFIG_DIR"
 
-# Fix "dubious ownership" error for Git (common on new installs)
-echo "Ensuring Git ownership is correct for $NVIM_CONFIG_DIR..."
-git config --global --add safe.directory "$NVIM_CONFIG_DIR"
-git config --global --add safe.directory "$GOATVIM_REPO_DIR"
+# Fix "dubious ownership" error for ALL repositories on this machine
+# This is necessary because lazy.nvim installs plugins in ~/.local/share/nvim/lazy/
+echo "Fixing Git 'dubious ownership' issues globally..."
+git config --global --add safe.directory '*'
 
 echo "goatvim installation complete!"
 echo "Now run 'nvim' and wait for lazy.nvim to install your plugins."
