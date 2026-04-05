@@ -29,11 +29,33 @@ fi
 echo "Linking goatvim: $GOATVIM_REPO_DIR -> $NVIM_CONFIG_DIR"
 ln -s "$GOATVIM_REPO_DIR" "$NVIM_CONFIG_DIR"
 
+# Fix permissions if Neovim was previously run with sudo
+echo "Checking permissions for Neovim data directories..."
+for dir in "$HOME/.local/share/nvim" "$HOME/.local/state/nvim" "$HOME/.cache/nvim"; do
+    if [ -d "$dir" ]; then
+        if ! chown -R "$USER":"$(id -gn)" "$dir" 2>/dev/null; then
+            echo "⚠️  Warning: Permission denied fixing ownership of $dir."
+            echo "   Please run this manually: sudo chown -R $USER:$USER $dir"
+        fi
+    fi
+done
+
 # Fix "dubious ownership" error for ALL repositories on this machine
 # This is necessary because lazy.nvim installs plugins in ~/.local/share/nvim/lazy/
 # which Git often flags as having dubious ownership on new machine setups.
 echo "Fixing Git 'dubious ownership' issues globally..."
 git config --global --add safe.directory '*'
+
+# Option to flush existing plugins
+if [ -d "$HOME/.local/share/nvim/lazy" ]; then
+    echo ""
+    read -p "Do you want to wipe existing Neovim plugins to ensure a clean installation? (y/N) " wipe_plugins
+    if [[ "$wipe_plugins" =~ ^[Yy]$ ]]; then
+        echo "Flushing installed plugins in ~/.local/share/nvim/lazy..."
+        rm -rf "$HOME/.local/share/nvim/lazy"
+        echo "Plugins flushed."
+    fi
+fi
 
 echo "----------------------------------------"
 echo "🐐 goatvim installation complete!"
