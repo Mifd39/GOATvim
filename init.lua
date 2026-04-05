@@ -993,7 +993,7 @@ require('lazy').setup({
     'kiddos/gemini.nvim',
     opts = {
       completion = {
-        enabled = true,
+        enabled = false,
       },
     },
     config = function(_, opts)
