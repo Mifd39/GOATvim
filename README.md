@@ -87,6 +87,24 @@ The installer checks prerequisites and symlinks the repo into `~/.config`, so `g
 On first launch, wait for lazy.nvim, the treesitter parsers and Mason to finish installing, then run
 `:checkhealth kickstart` to confirm everything is in place.
 
+### Updating
+
+```bash
+cd ~/GOATvim && git pull
+```
+
+Then run `:Lazy restore` in Neovim to move plugins to the versions pinned in `lazy-lock.json`.
+
+### Uninstalling
+
+```bash
+rm ~/.config/nvim                      # or ~/.config/goatvim; this only removes the symlink
+rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim   # plugins, Mason tools, sessions
+```
+
+Swap `nvim` for `goatvim` in those paths if you installed it side by side. Restore your old config from the
+`*.bak-<timestamp>` folder the installer created.
+
 ---
 
 ## ⌨️ Essential keybindings
