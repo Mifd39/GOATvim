@@ -1,3 +1,53 @@
+-- snacks centres every header line on its own, so lines of different widths
+-- drift apart. Pad each piece into a rectangle, centre the goat over the title,
+-- and the art stays in one piece (and survives editors that strip trailing spaces).
+local goat = [[
+  ___.
+ //  \\
+((   ''
+ \\__,
+  /6 (%)\,
+ (__/:";,;\--____--_
+  ;; :';,:';`;,';,;';`,`_
+    ;:,;;';';,;':,';';,-Y\
+     ;,;,;';';,;':;';'; Z/
+     / ;,';';,;';,;';;'
+    / / |';/~~~\';;;';\
+   (;)  |;|    |;|  |;|
+   |;|  |;|    |;|  |;|
+  /  | /  |   /  | /  |
+ "---'"---'  "---'"---']]
+
+local title = [[
+ ██████╗  ██████╗  █████╗ ████████╗██╗   ██╗██╗███╗   ███╗
+██╔════╝ ██╔═══██╗██╔══██╗╚══██╔══╝██║   ██║██║████╗ ████║
+██║  ███╗██║   ██║███████║   ██║   ██║   ██║██║██╔████╔██║
+██║   ██║██║   ██║██╔══██║   ██║   ╚██╗ ██╔╝██║██║╚██╔╝██║
+╚██████╔╝╚██████╔╝██║  ██║   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║
+ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝]]
+
+local function rect(text, width)
+  local lines = vim.split(text, '\n')
+  local w = width or 0
+  for _, l in ipairs(lines) do
+    w = math.max(w, vim.api.nvim_strwidth(l))
+  end
+  for i, l in ipairs(lines) do
+    lines[i] = l .. string.rep(' ', w - vim.api.nvim_strwidth(l))
+  end
+  return lines, w
+end
+
+local title_lines, title_width = rect(title)
+local goat_lines, goat_width = rect(goat)
+local indent = string.rep(' ', math.floor((title_width - goat_width) / 2))
+for i, l in ipairs(goat_lines) do
+  goat_lines[i] = indent .. l
+end
+goat_lines = rect(table.concat(goat_lines, '\n'), title_width)
+
+local header = table.concat(vim.list_extend(vim.list_extend(goat_lines, { '', '' }), title_lines), '\n')
+
 return {
   {
     "folke/snacks.nvim",
@@ -8,31 +58,7 @@ return {
       bigfile = { enabled = true },
       dashboard = {
         preset = {
-          header = [[
-                  ___.
-                 //  \\
-                ((   ''
-                 \\__,
-                  /6 (%)\,
-                 (__/:";,;\--____--_
-                  ;; :';,:';`;,';,;';`,`_
-                    ;:,;;';';,;':,';';,-Y\
-                     ;,;,;';';,;':;';'; Z/
-                     / ;,';';,;';,;';;'
-                    / / |';/~~~~~\';\
-                   ( )  | |      | |
-                   | |  | |      | |
-                  /  | /  |     /  |
-                 "---'"---'    "---'
-
-
-
- ██████╗  ██████╗  █████╗ ████████╗██╗   ██╗██╗███╗   ███╗
-██╔════╝ ██╔═══██╗██╔══██╗╚══██╔══╝██║   ██║██║████╗ ████║
-██║  ███╗██║   ██║███████║   ██║   ██║   ██║██║██╔████╔██║
-██║   ██║██║   ██║██╔══██║   ██║   ╚██╗ ██╔╝██║██║╚██╔╝██║
-╚██████╔╝╚██████╔╝██║  ██║   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║
- ╚═════╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝  ]],
+          header = header,
           keys = {
             { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
