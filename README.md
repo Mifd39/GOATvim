@@ -140,6 +140,7 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 ### Find & navigate
 | Key | Action |
 |-----|--------|
+| `<leader>h` | Home screen (dashboard) |
 | `<leader><leader>` | Smart find files |
 | `<leader>/` | Grep in project |
 | `<leader>,` | Open buffers |
@@ -278,7 +279,7 @@ To debug another language, add its adapter in `lua/kickstart/plugins/debug.lua`.
 | `<leader>du` / `<F7>` | Toggle debug UI |
 
 ### Dashboard
-`f` find file · `n` new file · `g` find text · `r` recent files · `c` config · `s` restore session · `l` Lazy · `q` quit
+`<leader>h` opens it at any time. On the dashboard: `f` find file · `n` new file · `g` find text · `r` recent files · `c` config · `s` restore session · `l` Lazy · `q` quit
 
 ---
 

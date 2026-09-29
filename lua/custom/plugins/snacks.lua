@@ -103,6 +103,7 @@ return {
       { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
       { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+      { "<leader>h", function() Snacks.dashboard() end, desc = "Home (dashboard)" },
       { "<leader>e", function() Snacks.explorer() end, desc = "File Explorer" },
       { "-", function() Snacks.explorer.reveal() end, desc = "Explorer at current file" },
 
