@@ -8,70 +8,88 @@
 
 ## 📦 What's inside
 
-### Core & UI
-- **[lazy.nvim](https://github.com/folke/lazy.nvim)**: plugin manager, pinned via `lazy-lock.json`
-- **[snacks.nvim](https://github.com/folke/snacks.nvim)**: dashboard, pickers, explorer, notifications, indent guides, terminal, scratch buffers
-- **[noice.nvim](https://github.com/folke/noice.nvim)**: cmdline and message UI
-- **[mini.nvim](https://github.com/echasnovski/mini.nvim)**: `mini.ai`, `mini.surround`, `mini.sessions`, `mini.icons`, statusline
-- **[catppuccin](https://github.com/catppuccin/nvim)**: colorscheme
-
-### Navigation & search
-- **Snacks pickers**: files, grep, buffers, LSP, git, help, keymaps
-- **[flash.nvim](https://github.com/folke/flash.nvim)**: jump anywhere with labels
-- **[harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)**: pin files and jump between them
-- **[oil.nvim](https://github.com/stevearc/oil.nvim)**: edit the filesystem like a buffer
-- **[trouble.nvim](https://github.com/folke/trouble.nvim)**: diagnostics, references and quickfix lists
-- **[grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim)**: project-wide find and replace
-
-### Development
-- **Native LSP** with [Mason](https://github.com/mason-org/mason.nvim): installs servers automatically (Lua, Python, C/C++, Tailwind)
-- **[typescript-tools.nvim](https://github.com/pmizio/typescript-tools.nvim)**: TypeScript / JavaScript / SolidJS
-- **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** (`main` branch) + treesitter-context
-- **[blink.cmp](https://github.com/Saghen/blink.cmp)**: completion, with LuaSnip + friendly-snippets
-- **[conform.nvim](https://github.com/stevearc/conform.nvim)**: format on save (stylua, prettierd)
-- **[nvim-lint](https://github.com/mfussenegger/nvim-lint)**: markdownlint
-- **[nvim-dap](https://github.com/mfussenegger/nvim-dap)** + dap-ui: debugging
-- **[gitsigns](https://github.com/lewis6991/gitsigns.nvim)**: git hunks in the gutter
-- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)**: markdown rendering in the buffer
-- English / Danish spell checking (`<leader>us` cycles en → da → off)
+| Area | Plugins |
+|------|---------|
+| Core & UI | [lazy.nvim](https://github.com/folke/lazy.nvim) (plugins pinned in `lazy-lock.json`), [snacks.nvim](https://github.com/folke/snacks.nvim) (dashboard, pickers, explorer, notifications, indent guides, terminal), [noice.nvim](https://github.com/folke/noice.nvim), [which-key.nvim](https://github.com/folke/which-key.nvim), [catppuccin](https://github.com/catppuccin/nvim), [mini.nvim](https://github.com/echasnovski/mini.nvim) (statusline, icons, sessions, textobjects, surround) |
+| Navigation | [flash.nvim](https://github.com/folke/flash.nvim), [harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), [oil.nvim](https://github.com/stevearc/oil.nvim), [trouble.nvim](https://github.com/folke/trouble.nvim), [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim) |
+| Language support | Native LSP + [Mason](https://github.com/mason-org/mason.nvim) (Lua, Python, C/C++, Tailwind installed automatically), [typescript-tools.nvim](https://github.com/pmizio/typescript-tools.nvim) (TypeScript / JavaScript / SolidJS), [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (`main` branch) + treesitter-context |
+| Editing | [blink.cmp](https://github.com/Saghen/blink.cmp) + LuaSnip + friendly-snippets, [conform.nvim](https://github.com/stevearc/conform.nvim) (format on save), [nvim-lint](https://github.com/mfussenegger/nvim-lint), [nvim-autopairs](https://github.com/windwp/nvim-autopairs), [todo-comments](https://github.com/folke/todo-comments.nvim) |
+| Git & debug | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim), [nvim-dap](https://github.com/mfussenegger/nvim-dap) + dap-ui |
+| Writing | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim), English / Danish spell checking |
 
 ---
 
 ## 🚀 Installation
 
-### Prerequisites
+### Requirements
 
-| Tool | Why |
-|------|-----|
-| **Neovim 0.12+** | required by nvim-treesitter's `main` branch |
-| **tree-sitter-cli 0.26.1+** | builds syntax parsers (install it natively, **not** from npm) |
-| git, a C compiler, curl, tar, unzip | plugins, parsers and Mason packages |
-| ripgrep (`rg`) | grep pickers |
-| Node.js + npm | Mason installs pyright, prettierd, Tailwind and TypeScript with it |
-| a [Nerd Font](https://www.nerdfonts.com/) | icons (set in your terminal) |
-| *optional:* make, fd, wl-clipboard / xclip, go | LuaSnip regex, faster file search, system clipboard, Go debugging |
+| Tool | Version | Why |
+|------|---------|-----|
+| Neovim | **0.12+** | nvim-treesitter's `main` branch needs it |
+| tree-sitter CLI | **0.26.1+** | builds the syntax parsers. Install it natively, **not** from npm |
+| Node.js + npm | **22+** | Mason installs pyright, prettierd, markdownlint, Tailwind and TypeScript with it |
+| git, a C compiler, curl, tar, unzip, ripgrep | any | plugins, parsers, Mason packages, grep search |
+| A [Nerd Font](https://www.nerdfonts.com/) | any | icons; set it as your terminal font |
+| *Optional:* make, fd, wl-clipboard or xclip, go | any | LuaSnip regex snippets, faster file search, system clipboard, Go debugging |
 
-**Arch / Manjaro**
+### Arch / Manjaro
+
+Everything in the official repos is new enough:
+
 ```bash
-sudo pacman -S --needed neovim tree-sitter-cli git base-devel curl tar unzip ripgrep fd nodejs npm wl-clipboard
+sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl tar unzip ripgrep fd wl-clipboard
 ```
 
-**Fedora**
-```bash
-sudo dnf install neovim tree-sitter-cli git gcc make curl tar unzip ripgrep fd-find nodejs npm wl-clipboard
-```
+### Fedora 43
 
-**Debian / Ubuntu** (the packaged Neovim is too old, so install it from the release tarball)
+Fedora's `neovim` (0.11) and `tree-sitter-cli` (0.25) packages are too old, so install those two from their releases:
+
 ```bash
-sudo apt install git build-essential curl tar unzip ripgrep fd-find nodejs npm xclip
+sudo dnf install nodejs nodejs-npm git gcc make curl tar unzip gzip ripgrep fd-find wl-clipboard
+
 # Neovim
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz && sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-# tree-sitter CLI (needs Rust: https://rustup.rs)
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+
+# tree-sitter CLI
+mkdir -p ~/.local/bin
+curl -L https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-x64.gz | gunzip > ~/.local/bin/tree-sitter
+chmod +x ~/.local/bin/tree-sitter
+```
+
+### Debian / Ubuntu
+
+The packaged Neovim, tree-sitter and Node.js are all too old:
+
+```bash
+sudo apt install git build-essential curl tar unzip gzip ripgrep fd-find wl-clipboard xclip
+
+# Node.js 22 (NodeSource)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install nodejs
+
+# Neovim
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+```
+
+For the tree-sitter CLI, **Ubuntu 24.04+ / Debian 13+** can use the prebuilt binary:
+
+```bash
+mkdir -p ~/.local/bin
+curl -L https://github.com/tree-sitter/tree-sitter/releases/latest/download/tree-sitter-linux-x64.gz | gunzip > ~/.local/bin/tree-sitter
+chmod +x ~/.local/bin/tree-sitter
+```
+
+**Ubuntu 22.04 / Debian 12** have a glibc that's too old for that binary, so build it with Rust ([rustup.rs](https://rustup.rs)):
+
+```bash
 cargo install --locked tree-sitter-cli
 ```
 
-Any distro can check its versions with `nvim --version` and `tree-sitter --version`.
+Make sure `~/.local/bin` (or `~/.cargo/bin`) is on your `PATH`. The commands above are for x86-64. On ARM, use the `arm64` release files instead.
 
 ### Setup
 
@@ -80,12 +98,12 @@ git clone https://github.com/Mifd39/GOATvim.git ~/GOATvim
 cd ~/GOATvim
 ./install.sh            # becomes your main config (an existing one is backed up, never deleted)
 # or
-./install.sh goatvim    # installs side by side: run it with `NVIM_APPNAME=goatvim nvim`
+./install.sh goatvim    # installs side by side; start it with: NVIM_APPNAME=goatvim nvim
 ```
 
-The installer checks prerequisites and symlinks the repo into `~/.config`, so `git pull` updates your config.
-On first launch, wait for lazy.nvim, the treesitter parsers and Mason to finish installing, then run
-`:checkhealth kickstart` to confirm everything is in place.
+The installer checks the requirements above, then symlinks the repo into `~/.config`, so `git pull` updates your config.
+On first launch, wait for lazy.nvim, the treesitter parsers and Mason to finish installing. Then run
+`:checkhealth kickstart` to confirm your system has everything.
 
 ### Updating
 
@@ -98,66 +116,167 @@ Then run `:Lazy restore` in Neovim to move plugins to the versions pinned in `la
 ### Uninstalling
 
 ```bash
-rm ~/.config/nvim                      # or ~/.config/goatvim; this only removes the symlink
+rm ~/.config/nvim                                              # only removes the symlink
 rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim   # plugins, Mason tools, sessions
 ```
 
-Swap `nvim` for `goatvim` in those paths if you installed it side by side. Restore your old config from the
+If you installed side by side, use `goatvim` instead of `nvim` in those paths. Your previous config is in the
 `*.bak-<timestamp>` folder the installer created.
 
 ---
 
-## ⌨️ Essential keybindings
+## ⌨️ Keybindings
 
-Leader is `<Space>`. Press it and wait to see every mapping (which-key).
+Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available key (which-key). `<leader>sk` searches all keymaps.
 
-### Files & search
-| Keymap | Action |
-|--------|--------|
-| `<leader><space>` | Smart find files |
-| `<leader>/` | Grep project |
-| `<leader>,` | Buffers |
-| `<leader>e` | File explorer (snacks) |
-| `-` | Open parent directory (oil) |
-| `<leader>sf` / `sg` / `sr` / `sh` / `sk` | Files / grep / recent / help / keymaps |
+### Find & navigate
+| Key | Action |
+|-----|--------|
+| `<leader><leader>` | Smart find files |
+| `<leader>/` | Grep in project |
+| `<leader>,` | Open buffers |
+| `<leader>:` | Command history |
+| `<leader>e` | File explorer |
+| `-` | Open parent directory in oil (edit it like a buffer, `:w` to apply) |
+| `<leader>sf` | Find files |
+| `<leader>sg` | Grep |
+| `<leader>sw` | Grep word under cursor / selection |
+| `<leader>sb` | Lines in current buffer |
+| `<leader>sB` | Grep open buffers |
+| `<leader>sr` | Recent files |
+| `<leader>sG` | Git files |
+| `<leader>sp` | Projects |
+| `<leader>sn` | Neovim config files |
+| `<leader>sh` | Help pages |
+| `<leader>sk` | Keymaps |
+| `<leader>sd` | Diagnostics |
+| `<leader>ss` | LSP symbols |
 | `<leader>sR` | Resume last picker |
-| `<leader>a`, `<C-e>`, `<leader>1-4` | Harpoon: add, menu, jump |
+| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Move between windows |
 
-### Code
-| Keymap | Action |
-|--------|--------|
-| `gd` / `gr` / `gI` / `gy` | Definition / references / implementation / type definition |
-| `grn` / `gra` | Rename / code action |
-| `<leader>f` | Format buffer |
+### Harpoon
+| Key | Action |
+|-----|--------|
+| `<leader>a` | Add file |
+| `<C-e>` | Toggle menu |
+| `<leader>1` … `<leader>4` | Jump to file 1–4 |
+| `<M-p>` / `<M-n>` | Previous / next file |
+
+### Code & LSP
+| Key | Action |
+|-----|--------|
+| `gd` | Go to definition |
+| `gr` | References |
+| `gI` | Go to implementation |
+| `gy` | Go to type definition |
+| `grD` | Go to declaration |
+| `grn` | Rename |
+| `gra` | Code action |
+| `gO` / `gW` | Document / workspace symbols |
+| `K` | Hover documentation |
+| `]]` / `[[` | Next / previous reference of word under cursor |
+| `<leader>f` | Format buffer (also runs on save) |
+| `<leader>cR` | Rename file |
+| `<leader>cs` | Symbols (Trouble) |
+| `<leader>cl` | LSP definitions / references (Trouble) |
+
+### Completion (insert mode)
+| Key | Action |
+|-----|--------|
+| `<Tab>` / `<C-i>` or `<C-y>` | Accept completion |
+| `<C-n>` / `<C-p>` (or arrow keys) | Next / previous item |
+| `<C-space>` | Open menu / toggle documentation |
+| `<C-b>` / `<C-f>` | Scroll documentation |
+| `<C-e>` | Close menu |
+| `<C-k>` | Toggle signature help |
+
+### Diagnostics
+| Key | Action |
+|-----|--------|
 | `<leader>xx` | Diagnostics (Trouble) |
-| `<leader>rr` / `rw` / `rf` | Find & replace: project / word / file |
-| `<C-i>` | Accept completion |
+| `<leader>xX` | Buffer diagnostics (Trouble) |
+| `<leader>xL` / `<leader>xQ` | Location / quickfix list (Trouble) |
+| `<leader>q` | Diagnostics to location list |
 
-### Editing & motion
-| Keymap | Action |
-|--------|--------|
-| `s` / `S` | Flash jump / Flash treesitter |
-| `gsa` / `gsd` / `gsr` | Surround add / delete / replace |
+### Find & replace
+| Key | Action |
+|-----|--------|
+| `<leader>rr` | Search and replace in project |
+| `<leader>rw` | Replace word under cursor |
+| `<leader>rf` | Replace in current file |
 
-### Git
-| Keymap | Action |
-|--------|--------|
+### Motion & editing
+| Key | Action |
+|-----|--------|
+| `s` | Flash jump (type characters, then the label) |
+| `S` | Flash treesitter selection |
+| `r` / `R` (after an operator) | Remote flash / treesitter search, e.g. `yr` |
+| `gsa{motion}{char}` | Add surrounding, e.g. `gsaiw)` |
+| `gsd{char}` | Delete surrounding, e.g. `gsd"` |
+| `gsr{old}{new}` | Replace surrounding, e.g. `gsr)]` |
+| `a` / `i` textobjects | Extended by mini.ai, e.g. `vaf`, `ciq`, `yinb` |
+| `<Esc>` | Clear search highlight |
+
+### Git (in files tracked by git)
+| Key | Action |
+|-----|--------|
 | `]h` / `[h` | Next / previous hunk |
-| `<leader>hs` / `hr` / `hp` | Stage / reset / preview hunk |
-| `<leader>gs` / `gl` / `gd` | Status / log / diff pickers |
+| `<leader>hs` / `<leader>hr` | Stage / reset hunk (works on a visual selection too) |
+| `<leader>hS` / `<leader>hR` | Stage / reset buffer |
+| `<leader>hp` | Preview hunk |
+| `<leader>hb` | Blame line |
+| `<leader>hd` / `<leader>hD` | Diff against index / last commit |
+| `<leader>tb` | Toggle inline blame |
+| `<leader>tD` | Toggle showing deleted lines |
+| `<leader>gs` / `<leader>gl` / `<leader>gd` | Git status / log / diff pickers |
+| `<leader>gB` | Open file in the browser |
 
-### Toggles (`<leader>u`)
-`us` spell (en/da/off) · `uw` wrap · `uh` inlay hints · `ud` diagnostics · `um` markdown render · `uL` relative numbers
+### Toggles
+| Key | Toggle |
+|-----|--------|
+| `<leader>us` | Spell check (English → Danish → off) |
+| `<leader>uw` | Line wrap |
+| `<leader>ul` / `<leader>uL` | Line numbers / relative numbers |
+| `<leader>ud` | Diagnostics |
+| `<leader>uh` | Inlay hints |
+| `<leader>um` | Markdown rendering |
+| `<leader>uc` | Conceal |
+| `<leader>ug` | Indent guides |
+| `<leader>uT` | Treesitter highlighting |
+| `<leader>ub` | Dark / light background |
+| `<leader>uD` | Dim inactive code |
+| `<leader>un` | Dismiss notifications |
 
-### Debug
-`<F5>` start/continue · `<F1>/<F2>/<F3>` step into/over/out · `<leader>db` breakpoint · `<leader>du` UI
+### Windows, buffers & terminal
+| Key | Action |
+|-----|--------|
+| `<leader>bd` | Delete buffer |
+| `<leader>z` / `<leader>Z` | Zen mode / zoom window |
+| `<leader>.` / `<leader>S` | Scratch buffer / pick scratch buffer |
+| `<leader>n` | Notification history |
+| `<C-/>` | Toggle terminal |
+| `<Esc><Esc>` | Leave terminal mode |
+
+### Debugging
+Debugging is only set up for **Go** (it needs `go` installed). Other languages need an adapter configured in
+`lua/kickstart/plugins/debug.lua`; until then `<F5>` reports "No configuration found".
+
+| Key | Action |
+|-----|--------|
+| `<F5>` | Start / continue |
+| `<F1>` / `<F2>` / `<F3>` | Step into / over / out |
+| `<leader>db` / `<leader>dB` | Toggle breakpoint / conditional breakpoint |
+| `<leader>du` / `<F7>` | Toggle debug UI |
+
+### Dashboard
+`f` find file · `n` new file · `g` find text · `r` recent files · `c` config · `s` restore session · `l` Lazy · `q` quit
 
 ---
 
 ## ⚙️ Customization
 
 - Add plugins as new files in `lua/custom/plugins/`, each returning a lazy.nvim spec.
-- Core options, LSP servers and treesitter languages live in `init.lua`.
+- Core options, LSP servers, formatters and treesitter languages are in `init.lua`.
 - After adding or removing plugins, run `:Lazy sync` and commit `lazy-lock.json`.
 
 ---

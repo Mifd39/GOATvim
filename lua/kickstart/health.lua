@@ -34,6 +34,19 @@ local check_tree_sitter_cli = function()
   end
 end
 
+local check_node = function()
+  if vim.fn.executable 'node' == 0 then
+    vim.health.error("Could not find 'node'", 'Mason needs Node.js 22+ to install pyright, prettierd, markdownlint, tailwind and typescript.')
+    return
+  end
+  local ver = vim.version.parse(vim.fn.system { 'node', '--version' })
+  if ver and vim.version.lt(ver, '22.0.0') then
+    vim.health.error(string.format('Node.js %s is too old, 22+ is required', tostring(ver)), 'prettierd, markdownlint and typescript-language-server need Node.js 22+.')
+  else
+    vim.health.ok(string.format("Found Node.js: '%s'", tostring(ver)))
+  end
+end
+
 local check_exes = function(exes, level)
   for _, exe in ipairs(exes) do
     local name, why = exe[1], exe[2]
@@ -70,6 +83,7 @@ return {
 
     check_version()
     check_tree_sitter_cli()
+    check_node()
     check_exes({
       { 'git', 'plugin installs' },
       { 'cc', 'building treesitter parsers' },
@@ -81,7 +95,8 @@ return {
     }, 'error')
     check_exes({
       { 'make', 'LuaSnip regex support' },
-      { 'fd', 'faster file pickers' },
+      -- Debian/Ubuntu install fd as `fdfind`; snacks picks up either name
+      { vim.fn.executable 'fdfind' == 1 and 'fdfind' or 'fd', 'faster file pickers' },
       { 'go', 'Go debugging (delve)' },
     }, 'warn')
     check_clipboard()

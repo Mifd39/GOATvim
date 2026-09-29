@@ -40,6 +40,16 @@ else
   missing_required+=("tree-sitter (tree-sitter-cli 0.26.1+, needed for syntax highlighting)")
 fi
 
+# --- Node.js (Mason's prettierd, markdownlint and typescript need 22+) --------
+if command -v node >/dev/null 2>&1; then
+  node_major="$(node -p 'process.versions.node.split(".")[0]')"
+  if [ "$node_major" -lt 22 ]; then
+    missing_required+=("Node.js 22+ (found $(node --version))")
+  fi
+else
+  missing_required+=("node (Node.js 22+, Mason installs language servers and formatters with it)")
+fi
+
 need git   "plugin installs"
 need cc    "building treesitter parsers (gcc or clang)"
 need curl  "downloads"
@@ -48,7 +58,7 @@ need unzip "Mason package installs"
 need rg    "ripgrep, used by the grep pickers"
 need npm   "Mason installs pyright, prettierd, tailwind and typescript with it"
 want make  "LuaSnip regex support"
-want fd    "faster file pickers"
+command -v fd >/dev/null 2>&1 || command -v fdfind >/dev/null 2>&1 || missing_optional+=("fd (faster file pickers)")
 if ! command -v wl-copy >/dev/null 2>&1 && ! command -v xclip >/dev/null 2>&1 && ! command -v xsel >/dev/null 2>&1; then
   missing_optional+=("wl-clipboard or xclip (system clipboard)")
 fi
