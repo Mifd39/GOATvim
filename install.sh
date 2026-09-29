@@ -16,7 +16,6 @@ TARGET="$CONFIG_HOME/$APPNAME"
 missing_required=()
 missing_optional=()
 need() { command -v "$1" >/dev/null 2>&1 || missing_required+=("$1 ($2)"); }
-want() { command -v "$1" >/dev/null 2>&1 || missing_optional+=("$1 ($2)"); }
 
 echo "🐐 Installing GOATvim -> $TARGET"
 echo
@@ -40,7 +39,7 @@ else
   missing_required+=("tree-sitter (tree-sitter-cli 0.26.1+, needed for syntax highlighting)")
 fi
 
-# --- Node.js (Mason's prettierd, markdownlint and typescript need 22+) --------
+# --- Node.js (Mason's prettierd needs 22+) ------------------------------------
 if command -v node >/dev/null 2>&1; then
   node_major="$(node -p 'process.versions.node.split(".")[0]')"
   if [ "$node_major" -lt 22 ]; then
@@ -56,8 +55,12 @@ need curl  "downloads"
 need tar   "treesitter parser downloads"
 need unzip "Mason package installs"
 need rg    "ripgrep, used by the grep pickers"
-need npm   "Mason installs pyright, prettierd, tailwind and typescript with it"
-want make  "LuaSnip regex support"
+need npm   "Mason installs pyright, prettierd, tailwind and vtsls with it"
+venv_dir="$(mktemp -d)"
+if ! command -v python3 >/dev/null 2>&1 || ! python3 -m venv "$venv_dir/v" >/dev/null 2>&1; then
+  missing_optional+=("python3 with venv (Python debugging; Debian/Ubuntu: python3-venv)")
+fi
+rm -rf "$venv_dir"
 command -v fd >/dev/null 2>&1 || command -v fdfind >/dev/null 2>&1 || missing_optional+=("fd (faster file pickers)")
 if ! command -v wl-copy >/dev/null 2>&1 && ! command -v xclip >/dev/null 2>&1 && ! command -v xsel >/dev/null 2>&1; then
   missing_optional+=("wl-clipboard or xclip (system clipboard)")

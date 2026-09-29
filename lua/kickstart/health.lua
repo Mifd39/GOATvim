@@ -36,14 +36,31 @@ end
 
 local check_node = function()
   if vim.fn.executable 'node' == 0 then
-    vim.health.error("Could not find 'node'", 'Mason needs Node.js 22+ to install pyright, prettierd, markdownlint, tailwind and typescript.')
+    vim.health.error("Could not find 'node'", 'Mason needs Node.js 22+ to install pyright, prettierd, tailwind and vtsls.')
     return
   end
   local ver = vim.version.parse(vim.fn.system { 'node', '--version' })
   if ver and vim.version.lt(ver, '22.0.0') then
-    vim.health.error(string.format('Node.js %s is too old, 22+ is required', tostring(ver)), 'prettierd, markdownlint and typescript-language-server need Node.js 22+.')
+    vim.health.error(string.format('Node.js %s is too old, 22+ is required', tostring(ver)), 'prettierd needs Node.js 22+.')
   else
     vim.health.ok(string.format("Found Node.js: '%s'", tostring(ver)))
+  end
+end
+
+local check_python = function()
+  if vim.fn.executable 'python3' == 0 then
+    vim.health.warn("Could not find 'python3'", 'Needed for Python debugging (Mason installs debugpy into a Python venv).')
+    return
+  end
+  -- Actually create a venv: on Debian/Ubuntu the modules import fine but this fails without python3-venv
+  local dir = vim.fn.tempname()
+  vim.fn.system { 'python3', '-m', 'venv', dir }
+  local failed = vim.v.shell_error ~= 0
+  vim.fn.delete(dir, 'rf')
+  if failed then
+    vim.health.warn("python3 has no working 'venv' module", 'Mason cannot install debugpy. On Debian/Ubuntu: sudo apt install python3-venv')
+  else
+    vim.health.ok("Found python3 with venv (for debugpy)")
   end
 end
 
@@ -91,14 +108,13 @@ return {
       { 'tar', 'treesitter parser downloads' },
       { 'unzip', 'mason package installs' },
       { 'rg', 'grep pickers' },
-      { 'npm', 'mason installs pyright, prettierd, tailwind and typescript' },
+      { 'npm', 'mason installs pyright, prettierd, tailwind and vtsls' },
     }, 'error')
     check_exes({
-      { 'make', 'LuaSnip regex support' },
       -- Debian/Ubuntu install fd as `fdfind`; snacks picks up either name
       { vim.fn.executable 'fdfind' == 1 and 'fdfind' or 'fd', 'faster file pickers' },
-      { 'go', 'Go debugging (delve)' },
     }, 'warn')
+    check_python()
     check_clipboard()
   end,
 }

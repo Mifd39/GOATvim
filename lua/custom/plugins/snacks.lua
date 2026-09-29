@@ -72,6 +72,7 @@ return {
     ---@type snacks.Config
     opts = {
       bigfile = { enabled = true },
+      explorer = { enabled = true }, -- also opens for `nvim <dir>` instead of netrw
       dashboard = {
         preset = {
           header = header,
@@ -103,6 +104,7 @@ return {
       { "<leader>/", function() Snacks.picker.grep() end, desc = "Grep" },
       { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
       { "<leader>e", function() Snacks.explorer() end, desc = "File Explorer" },
+      { "-", function() Snacks.explorer.reveal() end, desc = "Explorer at current file" },
 
       -- Search (<leader>s)
       { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
@@ -119,6 +121,12 @@ return {
       { "<leader>sR", function() Snacks.picker.resume() end, desc = "Resume last picker" },
       { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
       { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
+
+      -- Diagnostics & lists (<leader>x)
+      { "<leader>xx", function() Snacks.picker.diagnostics() end, desc = "Diagnostics (project)" },
+      { "<leader>xX", function() Snacks.picker.diagnostics_buffer() end, desc = "Diagnostics (buffer)" },
+      { "<leader>xL", function() Snacks.picker.loclist() end, desc = "Location List" },
+      { "<leader>xQ", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
 
       -- Git (<leader>g)
       { "<leader>gd", git_picker("git_diff"), desc = "Git Diff (hunks)" },
@@ -147,6 +155,22 @@ return {
       { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
     },
     init = function()
+      -- Show LSP progress ("indexing…") as a single updating notification.
+      vim.api.nvim_create_autocmd("LspProgress", {
+        ---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
+        callback = function(ev)
+          local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+          vim.notify(vim.lsp.status(), "info", {
+            id = "lsp_progress",
+            title = "LSP Progress",
+            opts = function(notif)
+              notif.icon = ev.data.params.value.kind == "end" and " "
+                or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+            end,
+          })
+        end,
+      })
+
       vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",
         callback = function()

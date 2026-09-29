@@ -358,10 +358,10 @@ require('lazy').setup({
         { '<leader>u', group = '[U]I / toggles' },
         { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { '<leader>x', group = 'Diagnostics / [X]trouble' },
+        { '<leader>x', group = 'Diagnostics / lists' },
+        { '<leader>d', group = '[D]ebug' },
         { '<leader>r', group = '[R]eplace (grug-far)' },
         { '<leader>c', group = '[C]ode' },
-        { '<leader>d', group = '[D]ebug' },
         { '<leader>b', group = '[B]uffer' },
         { 'gs', group = '[S]urround', mode = { 'n', 'x' } },
       },
@@ -399,11 +399,7 @@ require('lazy').setup({
       -- Mason must be loaded before its dependents so we need to set it up here.
       -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
       { 'mason-org/mason.nvim', opts = {} },
-      'mason-org/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-      -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
@@ -475,34 +471,8 @@ require('lazy').setup({
             require('snacks').picker.lsp_workspace_symbols()
           end, 'Open Workspace Symbols')
 
-          -- The following two autocommands are used to highlight references of the
-          -- word under your cursor when your cursor rests there for a little while.
-          --    See `:help CursorHold` for information about when this is executed
-          --
-          -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.clear_references,
-            })
-
-            vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-              callback = function(event2)
-                vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-              end,
-            })
-          end
+          -- References of the word under the cursor are highlighted by snacks.words
+          -- (see lua/custom/plugins/snacks.lua); ]] / [[ jump between them.
 
           -- Inlay hints toggle lives on <leader>uh (via snacks.toggle -- see snacks.lua).
         end,
@@ -527,7 +497,7 @@ require('lazy').setup({
 
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
+      --  When you add blink.cmp, Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to every server.
       vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities() })
 
@@ -540,6 +510,11 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local ts_inlay_hints = {
+        parameterNames = { enabled = 'literals', suppressWhenArgumentMatchesName = true },
+        parameterTypes = { enabled = true },
+        variableTypes = { enabled = false },
+      }
       local servers = {
         clangd = {
           -- clangd writes info logs to stderr, which Neovim records as [ERROR] lines in lsp.log
@@ -547,33 +522,17 @@ require('lazy').setup({
         },
         -- gopls = {},
         pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- Disabled: Using typescript-tools.nvim instead for better TypeScript/SolidJS support
-        -- ts_ls = {
-        --   settings = {
-        --     typescript = {
-        --       inlayHints = {
-        --         includeInlayParameterNameHints = 'literal',
-        --         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        --         includeInlayFunctionParameterTypeHints = true,
-        --         includeInlayVariableTypeHints = false,
-        --       },
-        --     },
-        --     javascript = {
-        --       inlayHints = {
-        --         includeInlayParameterNameHints = 'literal',
-        --         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-        --         includeInlayFunctionParameterTypeHints = true,
-        --         includeInlayVariableTypeHints = false,
-        --       },
-        --     },
-        --   },
-        -- },
+
+        -- TypeScript / JavaScript (incl. SolidJS JSX). vtsls bundles its own TypeScript,
+        -- but uses the project's `typescript` when there is one.
+        vtsls = {
+          settings = {
+            typescript = { inlayHints = ts_inlay_hints },
+            javascript = { inlayHints = ts_inlay_hints },
+          },
+        },
         tailwindcss = {
           filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'html', 'css' },
         },
@@ -607,32 +566,30 @@ require('lazy').setup({
       --
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-        'prettierd', -- Prettier formatter
-        'markdownlint', -- Used by nvim-lint for markdown
-        -- Not used as an LSP (ts_ls is excluded below): it ships a bundled TypeScript
-        -- that typescript-tools.nvim falls back to when a project has none.
-        'typescript-language-server',
-      })
+      -- Mason package names (they differ from the server names above, e.g. lua_ls -> lua-language-server)
+      local ensure_installed = {
+        -- Language servers
+        'clangd',
+        'lua-language-server',
+        'pyright',
+        'rust-analyzer',
+        'tailwindcss-language-server',
+        'vtsls',
+        -- Formatters
+        'stylua',
+        'prettierd',
+        -- Debug adapters (Python, Rust) -- see lua/kickstart/plugins/debug.lua
+        'debugpy',
+        'codelldb',
+      }
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      -- Apply the overrides above on top of nvim-lspconfig's defaults.
+      -- Apply the overrides above on top of nvim-lspconfig's defaults, then start the
+      -- servers. A server whose binary isn't installed yet is skipped until it is.
       for name, config in pairs(servers) do
         vim.lsp.config(name, config)
       end
-
-      -- mason-lspconfig v2 calls `vim.lsp.enable()` for every installed server.
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- installs are handled by mason-tool-installer
-        automatic_enable = {
-          exclude = {
-            'ts_ls', -- typescript-tools.nvim handles TypeScript
-            'stylua', -- conform runs stylua as a formatter; no need for its LSP mode
-          },
-        },
-      }
+      vim.lsp.enable(vim.tbl_keys(servers))
     end,
   },
 
@@ -688,32 +645,9 @@ require('lazy').setup({
     event = 'VimEnter',
     version = '1.*',
     dependencies = {
-      -- Snippet Engine
-      {
-        'L3MON4D3/LuaSnip',
-        version = '2.*',
-        build = (function()
-          -- Build Step is needed for regex support in snippets.
-          -- This step is not supported in many windows environments.
-          -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-        dependencies = {
-          -- `friendly-snippets` contains a variety of premade snippets.
-          --    See the README about individual language/framework/plugin snippets:
-          --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
-        },
-        opts = {},
-      },
+      -- Premade snippets for many languages; blink.cmp loads them itself
+      -- (see https://github.com/rafamadriz/friendly-snippets)
+      'rafamadriz/friendly-snippets',
       'folke/lazydev.nvim',
     },
     --- @module 'blink.cmp'
@@ -747,7 +681,6 @@ require('lazy').setup({
         ['<C-i>'] = { 'select_and_accept', 'fallback' },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
       },
 
       appearance = {
@@ -769,7 +702,8 @@ require('lazy').setup({
         },
       },
 
-      snippets = { preset = 'luasnip' },
+      -- Snippets use Neovim's built-in `vim.snippet` engine.
+      snippets = { preset = 'default' },
 
       -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
       -- which automatically downloads a prebuilt binary when enabled.
@@ -801,9 +735,6 @@ require('lazy').setup({
       vim.cmd.colorscheme 'catppuccin'
     end,
   },
-
-  -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -841,8 +772,23 @@ require('lazy').setup({
       -- set use_icons to true if you have a Nerd Font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
-      -- Load icons module for plugins like render-markdown
+      -- Icons for every plugin; the mock covers plugins that ask for nvim-web-devicons
       require('mini.icons').setup()
+      MiniIcons.mock_nvim_web_devicons()
+
+      -- Auto-close brackets and quotes
+      require('mini.pairs').setup()
+
+      -- Highlight TODO / FIXME / HACK / NOTE in comments
+      require('mini.hipatterns').setup {
+        highlighters = {
+          fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+          hack = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+          warn = { pattern = '%f[%w]()WARN()%f[%W]', group = 'MiniHipatternsHack' },
+          todo = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+          note = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+        },
+      }
 
       -- Session management
       require('mini.sessions').setup {
@@ -920,10 +866,6 @@ require('lazy').setup({
   --
 
   require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.oil',
-  require 'kickstart.plugins.harpoon',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

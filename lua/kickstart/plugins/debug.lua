@@ -1,15 +1,11 @@
 -- debug.lua
 --
--- Shows how to use the DAP plugin to debug your code.
---
--- Primarily focused on configuring the debugger for Go, but can
--- be extended to other languages as well. That's why it's called
--- kickstart.nvim and not kitchen-sink.nvim ;)
+-- Debugging with nvim-dap, set up for Python (debugpy) and Rust (codelldb).
+-- Mason installs both adapters; mason-nvim-dap provides their launch configurations.
+-- Other languages can be added with more `ensure_installed` entries and handlers.
 
 return {
-  -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
-  -- NOTE: And you can specify dependencies as well
   dependencies = {
     -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
@@ -20,9 +16,6 @@ return {
     -- Installs the debug adapters for you
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-
-    -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -68,6 +61,13 @@ return {
       end,
       desc = 'Debug: Set Conditional Breakpoint',
     },
+    {
+      '<leader>dq',
+      function()
+        require('dap').terminate()
+      end,
+      desc = 'Debug: Stop',
+    },
     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     {
       '<F7>',
@@ -87,21 +87,39 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+    local mason_dap = require 'mason-nvim-dap'
 
-    require('mason-nvim-dap').setup {
-      -- Makes a best effort to setup the various debuggers with
-      -- reasonable debug configurations
-      automatic_installation = true,
+    mason_dap.setup {
+      automatic_installation = false,
+      ensure_installed = { 'python', 'codelldb' },
+      handlers = {
+        -- Only the adapters listed above are set up; anything else Mason has is ignored.
+        function() end,
 
-      -- You can provide additional configuration to the handlers,
-      -- see mason-nvim-dap README for more information
-      handlers = {},
+        python = function(config)
+          -- Run the program with the project's interpreter (active virtualenv or python3 on PATH),
+          -- not the Python that Mason installed debugpy into.
+          for _, c in ipairs(config.configurations or {}) do
+            c.pythonPath = function()
+              local venv = os.getenv 'VIRTUAL_ENV'
+              return venv and (venv .. '/bin/python') or vim.fn.exepath 'python3'
+            end
+          end
+          mason_dap.default_setup(config)
+        end,
 
-      -- You'll need to check that you have the required things installed
-      -- online, please don't ask me how to install them :)
-      -- Update this to ensure that you have the debuggers for the langs you want
-      -- (delve is built with `go install`, so only try it when Go is present)
-      ensure_installed = vim.fn.executable 'go' == 1 and { 'delve' } or {},
+        codelldb = function(config)
+          -- codelldb can also debug C/C++/Swift/Zig; this config only enables Rust.
+          config.filetypes = { 'rust' }
+          for _, c in ipairs(config.configurations or {}) do
+            c.program = function()
+              -- Build first (`cargo build`), then pick the binary from target/debug.
+              return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/target/debug/', 'file')
+            end
+          end
+          mason_dap.default_setup(config)
+        end,
+      },
     }
 
     -- Dap UI setup
@@ -126,29 +144,8 @@ return {
       },
     }
 
-    -- Change breakpoint icons
-    -- vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
-    -- vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
-    -- local breakpoint_icons = vim.g.have_nerd_font
-    --     and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
-    --   or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
-    -- for type, icon in pairs(breakpoint_icons) do
-    --   local tp = 'Dap' .. type
-    --   local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
-    --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
-    -- end
-
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
-
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
   end,
 }

@@ -10,11 +10,16 @@
 
 | Area | Plugins |
 |------|---------|
-| Core & UI | [lazy.nvim](https://github.com/folke/lazy.nvim) (plugins pinned in `lazy-lock.json`), [snacks.nvim](https://github.com/folke/snacks.nvim) (dashboard, pickers, explorer, notifications, indent guides, terminal), [noice.nvim](https://github.com/folke/noice.nvim), [which-key.nvim](https://github.com/folke/which-key.nvim), [catppuccin](https://github.com/catppuccin/nvim), [mini.nvim](https://github.com/echasnovski/mini.nvim) (statusline, icons, sessions, textobjects, surround) |
-| Navigation | [flash.nvim](https://github.com/folke/flash.nvim), [harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), [oil.nvim](https://github.com/stevearc/oil.nvim), [trouble.nvim](https://github.com/folke/trouble.nvim), [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim) |
-| Language support | Native LSP + [Mason](https://github.com/mason-org/mason.nvim) (Lua, Python, C/C++, Tailwind installed automatically), [typescript-tools.nvim](https://github.com/pmizio/typescript-tools.nvim) (TypeScript / JavaScript / SolidJS), [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (`main` branch) + treesitter-context |
-| Editing | [blink.cmp](https://github.com/Saghen/blink.cmp) + LuaSnip + friendly-snippets, [conform.nvim](https://github.com/stevearc/conform.nvim) (format on save), [nvim-lint](https://github.com/mfussenegger/nvim-lint), [nvim-autopairs](https://github.com/windwp/nvim-autopairs), [todo-comments](https://github.com/folke/todo-comments.nvim) |
-| Git & debug | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim), [nvim-dap](https://github.com/mfussenegger/nvim-dap) + dap-ui |
+GOATvim is deliberately lean: 22 plugins, and one plugin per job. [snacks.nvim](https://github.com/folke/snacks.nvim) and
+[mini.nvim](https://github.com/echasnovski/mini.nvim) each cover many small features, so nothing is installed twice.
+
+| Area | Plugins |
+|------|---------|
+| Core & UI | [lazy.nvim](https://github.com/folke/lazy.nvim) (plugins pinned in `lazy-lock.json`), [snacks.nvim](https://github.com/folke/snacks.nvim) (dashboard, pickers, file explorer, notifications, indent guides, terminal), [which-key.nvim](https://github.com/folke/which-key.nvim), [catppuccin](https://github.com/catppuccin/nvim), [mini.nvim](https://github.com/echasnovski/mini.nvim) (statusline, icons, sessions, textobjects, surround, auto-pairs, TODO highlights) |
+| Navigation | [flash.nvim](https://github.com/folke/flash.nvim), [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim) (find & replace) |
+| Language support | Native LSP ([nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)) + [Mason](https://github.com/mason-org/mason.nvim), installing servers automatically for Lua, Python, C/C++, Rust, TypeScript / JavaScript (vtsls, incl. SolidJS) and Tailwind; [lazydev.nvim](https://github.com/folke/lazydev.nvim); [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (`main` branch) + treesitter-context |
+| Editing | [blink.cmp](https://github.com/Saghen/blink.cmp) + [friendly-snippets](https://github.com/rafamadriz/friendly-snippets), [conform.nvim](https://github.com/stevearc/conform.nvim) (format on save) |
+| Git & debug | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim), [nvim-dap](https://github.com/mfussenegger/nvim-dap) + dap-ui (Python and Rust) |
 | Writing | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim), English / Danish spell checking |
 
 ---
@@ -27,17 +32,17 @@
 |------|---------|-----|
 | Neovim | **0.12+** | nvim-treesitter's `main` branch needs it |
 | tree-sitter CLI | **0.26.1+** | builds the syntax parsers. Install it natively, **not** from npm |
-| Node.js + npm | **22+** | Mason installs pyright, prettierd, markdownlint, Tailwind and TypeScript with it |
+| Node.js + npm | **22+** | Mason installs pyright, prettierd, Tailwind and vtsls with it (prettierd needs 22+) |
 | git, a C compiler, curl, tar, unzip, ripgrep | any | plugins, parsers, Mason packages, grep search |
 | A [Nerd Font](https://www.nerdfonts.com/) | any | icons; set it as your terminal font |
-| *Optional:* make, fd, wl-clipboard or xclip, go | any | LuaSnip regex snippets, faster file search, system clipboard, Go debugging |
+| *Optional:* python3 with `venv`, fd, wl-clipboard or xclip | any | Python debugging (Mason installs debugpy into a venv), faster file search, system clipboard |
 
 ### Arch / Manjaro
 
 Everything in the official repos is new enough:
 
 ```bash
-sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl tar unzip ripgrep fd wl-clipboard
+sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl tar unzip ripgrep fd python wl-clipboard
 ```
 
 ### Fedora 43
@@ -45,7 +50,7 @@ sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl ta
 Fedora's `neovim` (0.11) and `tree-sitter-cli` (0.25) packages are too old, so install those two from their releases:
 
 ```bash
-sudo dnf install nodejs nodejs-npm git gcc make curl tar unzip gzip ripgrep fd-find wl-clipboard
+sudo dnf install nodejs nodejs-npm git gcc curl tar unzip gzip ripgrep fd-find python3 wl-clipboard
 
 # Neovim
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
@@ -63,7 +68,7 @@ chmod +x ~/.local/bin/tree-sitter
 The packaged Neovim, tree-sitter and Node.js are all too old:
 
 ```bash
-sudo apt install git build-essential curl tar unzip gzip ripgrep fd-find wl-clipboard xclip
+sudo apt install git build-essential curl tar unzip gzip ripgrep fd-find python3-venv wl-clipboard xclip
 
 # Node.js 22 (NodeSource)
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
@@ -137,7 +142,7 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<leader>,` | Open buffers |
 | `<leader>:` | Command history |
 | `<leader>e` | File explorer |
-| `-` | Open parent directory in oil (edit it like a buffer, `:w` to apply) |
+| `-` | File explorer, opened at the current file |
 | `<leader>sf` | Find files |
 | `<leader>sg` | Grep |
 | `<leader>sw` | Grep word under cursor / selection |
@@ -154,14 +159,6 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<leader>sR` | Resume last picker |
 | `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Move between windows |
 
-### Harpoon
-| Key | Action |
-|-----|--------|
-| `<leader>a` | Add file |
-| `<C-e>` | Toggle menu |
-| `<leader>1` … `<leader>4` | Jump to file 1–4 |
-| `<M-p>` / `<M-n>` | Previous / next file |
-
 ### Code & LSP
 | Key | Action |
 |-----|--------|
@@ -177,8 +174,6 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `]]` / `[[` | Next / previous reference of word under cursor |
 | `<leader>f` | Format buffer (also runs on save) |
 | `<leader>cR` | Rename file |
-| `<leader>cs` | Symbols (Trouble) |
-| `<leader>cl` | LSP definitions / references (Trouble) |
 
 ### Completion (insert mode)
 | Key | Action |
@@ -193,9 +188,9 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 ### Diagnostics
 | Key | Action |
 |-----|--------|
-| `<leader>xx` | Diagnostics (Trouble) |
-| `<leader>xX` | Buffer diagnostics (Trouble) |
-| `<leader>xL` / `<leader>xQ` | Location / quickfix list (Trouble) |
+| `<leader>xx` | Diagnostics in the project |
+| `<leader>xX` | Diagnostics in the current buffer |
+| `<leader>xL` / `<leader>xQ` | Location / quickfix list |
 | `<leader>q` | Diagnostics to location list |
 
 ### Find & replace
@@ -258,14 +253,20 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<Esc><Esc>` | Leave terminal mode |
 
 ### Debugging
-Debugging is only set up for **Go** (it needs `go` installed). Other languages need an adapter configured in
-`lua/kickstart/plugins/debug.lua`; until then `<F5>` reports "No configuration found".
+Set up for **Python** (debugpy) and **Rust** (codelldb); Mason installs both adapters.
+
+- **Python:** `<F5>` runs the current file with your active virtualenv's Python, or `python3` from your `PATH`.
+- **Rust:** run `cargo build` first. `<F5>` asks whether to launch with or without arguments, then for the binary
+  (it pre-fills `target/debug/`).
+
+To debug another language, add its adapter in `lua/kickstart/plugins/debug.lua`.
 
 | Key | Action |
 |-----|--------|
 | `<F5>` | Start / continue |
 | `<F1>` / `<F2>` / `<F3>` | Step into / over / out |
 | `<leader>db` / `<leader>dB` | Toggle breakpoint / conditional breakpoint |
+| `<leader>dq` | Stop debugging |
 | `<leader>du` / `<F7>` | Toggle debug UI |
 
 ### Dashboard
