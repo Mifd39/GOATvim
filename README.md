@@ -144,7 +144,7 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<leader>sb` | Lines in current buffer |
 | `<leader>sB` | Grep open buffers |
 | `<leader>sr` | Recent files |
-| `<leader>sG` | Git files |
+| `<leader>sG` | Git files (all files when not in a git repo) |
 | `<leader>sp` | Projects |
 | `<leader>sn` | Neovim config files |
 | `<leader>sh` | Help pages |

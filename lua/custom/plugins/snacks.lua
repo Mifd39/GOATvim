@@ -46,6 +46,22 @@ for i, l in ipairs(goat_lines) do
 end
 goat_lines = rect(table.concat(goat_lines, '\n'), title_width)
 
+-- Git pickers error out with "not a git repository" when the working directory
+-- isn't in a repo. Use the repo of the working directory, else of the current file;
+-- outside any repo, open `fallback` instead (or just say so).
+local function git_picker(name, fallback)
+  return function()
+    local root = Snacks.git.get_root(vim.uv.cwd()) or Snacks.git.get_root(0)
+    if root then
+      Snacks.picker[name] { cwd = root }
+    elseif fallback then
+      Snacks.picker[fallback]()
+    else
+      Snacks.notify.warn 'Not inside a git repository'
+    end
+  end
+end
+
 local header = table.concat(vim.list_extend(vim.list_extend(goat_lines, { '', '' }), title_lines), '\n')
 
 return {
@@ -94,7 +110,7 @@ return {
       { "<leader>sd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
       { "<leader>sf", function() Snacks.picker.files() end, desc = "Find Files" },
       { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
-      { "<leader>sG", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
+      { "<leader>sG", git_picker("git_files", "files"), desc = "Find Git Files" },
       { "<leader>sh", function() Snacks.picker.help() end, desc = "Help Pages" },
       { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
       { "<leader>sn", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Neovim config files" },
@@ -105,9 +121,9 @@ return {
       { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },
 
       -- Git (<leader>g)
-      { "<leader>gd", function() Snacks.picker.git_diff() end, desc = "Git Diff (hunks)" },
-      { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
-      { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
+      { "<leader>gd", git_picker("git_diff"), desc = "Git Diff (hunks)" },
+      { "<leader>gl", git_picker("git_log"), desc = "Git Log" },
+      { "<leader>gs", git_picker("git_status"), desc = "Git Status" },
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse (open in web)" },
 
       -- LSP
