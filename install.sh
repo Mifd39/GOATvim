@@ -61,6 +61,7 @@ if ! command -v python3 >/dev/null 2>&1 || ! python3 -m venv "$venv_dir/v" >/dev
   missing_optional+=("python3 with venv (Python debugging; Debian/Ubuntu: python3-venv)")
 fi
 rm -rf "$venv_dir"
+command -v lazygit >/dev/null 2>&1 || missing_optional+=("lazygit (git UI on <leader>gg)")
 command -v fd >/dev/null 2>&1 || command -v fdfind >/dev/null 2>&1 || missing_optional+=("fd (faster file pickers)")
 if ! command -v wl-copy >/dev/null 2>&1 && ! command -v xclip >/dev/null 2>&1 && ! command -v xsel >/dev/null 2>&1; then
   missing_optional+=("wl-clipboard or xclip (system clipboard)")

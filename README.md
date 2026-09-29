@@ -18,7 +18,7 @@ GOATvim is deliberately lean: 22 plugins, and one plugin per job. [snacks.nvim](
 | Core & UI | [lazy.nvim](https://github.com/folke/lazy.nvim) (plugins pinned in `lazy-lock.json`), [snacks.nvim](https://github.com/folke/snacks.nvim) (dashboard, pickers, file explorer, notifications, indent guides, terminal), [which-key.nvim](https://github.com/folke/which-key.nvim), [catppuccin](https://github.com/catppuccin/nvim), [mini.nvim](https://github.com/echasnovski/mini.nvim) (statusline, icons, sessions, textobjects, surround, auto-pairs, TODO highlights) |
 | Navigation | [flash.nvim](https://github.com/folke/flash.nvim), [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim) (find & replace) |
 | Language support | Native LSP ([nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)) + [Mason](https://github.com/mason-org/mason.nvim), installing servers automatically for Lua, Python, C/C++, Rust, TypeScript / JavaScript (vtsls, incl. SolidJS) and Tailwind; [lazydev.nvim](https://github.com/folke/lazydev.nvim); [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (`main` branch) + treesitter-context |
-| Editing | [blink.cmp](https://github.com/Saghen/blink.cmp) + [friendly-snippets](https://github.com/rafamadriz/friendly-snippets), [conform.nvim](https://github.com/stevearc/conform.nvim) (format on save) |
+| Editing | [blink.cmp](https://github.com/Saghen/blink.cmp) + [friendly-snippets](https://github.com/rafamadriz/friendly-snippets), [conform.nvim](https://github.com/stevearc/conform.nvim) (format on save: stylua, prettierd, ruff), treesitter folding, Neovim's built-in undo tree and directory diff |
 | Git & debug | [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim), [nvim-dap](https://github.com/mfussenegger/nvim-dap) + dap-ui (Python and Rust) |
 | Writing | [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim), English / Danish spell checking |
 
@@ -35,14 +35,14 @@ GOATvim is deliberately lean: 22 plugins, and one plugin per job. [snacks.nvim](
 | Node.js + npm | **22+** | Mason installs pyright, prettierd, Tailwind and vtsls with it (prettierd needs 22+) |
 | git, a C compiler, curl, tar, unzip, ripgrep | any | plugins, parsers, Mason packages, grep search |
 | A [Nerd Font](https://www.nerdfonts.com/) | any | icons; set it as your terminal font |
-| *Optional:* python3 with `venv`, fd, wl-clipboard or xclip | any | Python debugging (Mason installs debugpy into a venv), faster file search, system clipboard |
+| *Optional:* python3 with `venv`, lazygit, fd, wl-clipboard or xclip | any | Python debugging (Mason installs debugpy into a venv), git UI (`<leader>gg`), faster file search, system clipboard |
 
 ### Arch / Manjaro
 
 Everything in the official repos is new enough:
 
 ```bash
-sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl tar unzip ripgrep fd python wl-clipboard
+sudo pacman -S --needed neovim tree-sitter-cli nodejs npm git base-devel curl tar unzip ripgrep fd python lazygit wl-clipboard
 ```
 
 ### Fedora 43
@@ -93,6 +93,9 @@ chmod +x ~/.local/bin/tree-sitter
 ```bash
 cargo install --locked tree-sitter-cli
 ```
+
+**lazygit** (optional) is `sudo apt install lazygit` on Debian 13+ / Ubuntu 25.10+. On Fedora and older Ubuntu, follow
+[lazygit's install guide](https://github.com/jesseduffield/lazygit#installation).
 
 Make sure `~/.local/bin` (or `~/.cargo/bin`) is on your `PATH`. The commands above are for x86-64. On ARM, use the `arm64` release files instead.
 
@@ -210,6 +213,8 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `gsd{char}` | Delete surrounding, e.g. `gsd"` |
 | `gsr{old}{new}` | Replace surrounding, e.g. `gsr)]` |
 | `a` / `i` textobjects | Extended by mini.ai, e.g. `vaf`, `ciq`, `yinb` |
+| `za` / `zc` / `zo` | Toggle / close / open fold (files open unfolded) |
+| `zM` / `zR` | Close / open all folds |
 | `<Esc>` | Clear search highlight |
 
 ### Git (in files tracked by git)
@@ -225,6 +230,8 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<leader>tD` | Toggle showing deleted lines |
 | `<leader>gs` / `<leader>gl` / `<leader>gd` | Git status / log / diff pickers |
 | `<leader>gB` | Open file in the browser |
+| `<leader>gg` | lazygit (needs `lazygit` installed) |
+| `:DiffTool <a> <b>` | Compare two directories or files side by side |
 
 ### Toggles
 | Key | Toggle |
@@ -240,6 +247,7 @@ Leader is `<Space>`. Press it, `g`, `[` or `]` and pause to see every available 
 | `<leader>uT` | Treesitter highlighting |
 | `<leader>ub` | Dark / light background |
 | `<leader>uD` | Dim inactive code |
+| `<leader>uu` | Undo tree |
 | `<leader>un` | Dismiss notifications |
 
 ### Windows, buffers & terminal

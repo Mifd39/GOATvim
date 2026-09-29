@@ -133,6 +133,17 @@ return {
       { "<leader>gl", git_picker("git_log"), desc = "Git Log" },
       { "<leader>gs", git_picker("git_status"), desc = "Git Status" },
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse (open in web)" },
+      {
+        "<leader>gg",
+        function()
+          if vim.fn.executable("lazygit") == 0 then
+            Snacks.notify.warn("lazygit is not installed (see the README requirements)")
+            return
+          end
+          Snacks.lazygit()
+        end,
+        desc = "Lazygit",
+      },
 
       -- LSP
       { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },

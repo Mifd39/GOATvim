@@ -113,6 +113,7 @@ return {
     check_exes({
       -- Debian/Ubuntu install fd as `fdfind`; snacks picks up either name
       { vim.fn.executable 'fdfind' == 1 and 'fdfind' or 'fd', 'faster file pickers' },
+      { 'lazygit', 'git UI on <leader>gg' },
     }, 'warn')
     check_python()
     check_clipboard()

@@ -175,6 +175,14 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Fold by syntax (functions, blocks, ...) using treesitter; files open fully unfolded.
+--  za toggles a fold, zc / zo close / open, zM / zR close / open all. See `:help fold-commands`
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldtext = '' -- show the folded line with its normal highlighting
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -184,6 +192,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+vim.keymap.set('n', '<leader>uu', function()
+  require('undotree').open()
+end, { desc = 'Toggle Undotree' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -521,7 +533,16 @@ require('lazy').setup({
           cmd = { 'clangd', '--log=error' },
         },
         -- gopls = {},
-        pyright = {},
+        pyright = {
+          -- ruff organizes imports (on save, via conform)
+          settings = { pyright = { disableOrganizeImports = true } },
+        },
+        -- Python linting (ruff check) with quick fixes; hover stays with pyright
+        ruff = {
+          on_attach = function(client)
+            client.server_capabilities.hoverProvider = false
+          end,
+        },
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 
@@ -572,6 +593,7 @@ require('lazy').setup({
         'clangd',
         'lua-language-server',
         'pyright',
+        'ruff',
         'rust-analyzer',
         'tailwindcss-language-server',
         'vtsls',
@@ -625,8 +647,8 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        -- Conform runs multiple formatters in order
+        python = { 'ruff_organize_imports', 'ruff_format' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
@@ -898,6 +920,13 @@ require('lazy').setup({
       },
     })
   
+  -- Optional plugins that ship with Neovim 0.12. Loaded after lazy.nvim, which
+  -- resets the runtimepath during setup and would drop them again.
+  --  :Undotree                 browse the undo history as a tree (<leader>uu)
+  --  :DiffTool <left> <right>  compare two directories or files side by side
+  vim.cmd.packadd 'nvim.undotree'
+  vim.cmd.packadd 'nvim.difftool'
+
   -- Load custom spell check configuration
   require('custom.spell')
   -- The line beneath this is called `modeline`. See `:help modeline`
