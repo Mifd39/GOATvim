@@ -2,35 +2,57 @@
 --
 -- This file is not required for your own configuration,
 -- but helps people determine if their system is setup correctly.
+-- Run it with `:checkhealth kickstart`.
 --
 --]]
 
 local check_version = function()
   local verstr = tostring(vim.version())
-  if not vim.version.ge then
-    vim.health.error(string.format("Neovim out of date: '%s'. Upgrade to latest stable or nightly", verstr))
-    return
-  end
-
-  if vim.version.ge(vim.version(), '0.10-dev') then
+  -- nvim-treesitter (main branch) requires 0.12+
+  if vim.version.ge(vim.version(), '0.12') then
     vim.health.ok(string.format("Neovim version is: '%s'", verstr))
   else
-    vim.health.error(string.format("Neovim out of date: '%s'. Upgrade to latest stable or nightly", verstr))
+    vim.health.error(string.format("Neovim out of date: '%s'. GOATvim needs 0.12 or newer", verstr))
   end
 end
 
-local check_external_reqs = function()
-  -- Basic utils: `git`, `make`, `unzip`
-  for _, exe in ipairs { 'git', 'make', 'unzip', 'rg' } do
-    local is_executable = vim.fn.executable(exe) == 1
-    if is_executable then
-      vim.health.ok(string.format("Found executable: '%s'", exe))
+local check_tree_sitter_cli = function()
+  if vim.fn.executable 'tree-sitter' == 0 then
+    vim.health.error("Could not find 'tree-sitter' (tree-sitter-cli)", {
+      'nvim-treesitter needs it to build parsers; without it there is no syntax highlighting.',
+      'Install 0.26.1+ from your package manager, `cargo install --locked tree-sitter-cli`,',
+      'or a release binary from https://github.com/tree-sitter/tree-sitter/releases (not from npm).',
+    })
+    return
+  end
+  local out = vim.fn.system { 'tree-sitter', '--version' }
+  local ver = vim.version.parse(out)
+  if ver and vim.version.lt(ver, '0.26.1') then
+    vim.health.warn(string.format("tree-sitter-cli %s is too old, 0.26.1+ is required", tostring(ver)))
+  else
+    vim.health.ok(string.format("Found tree-sitter-cli: '%s'", vim.trim(out)))
+  end
+end
+
+local check_exes = function(exes, level)
+  for _, exe in ipairs(exes) do
+    local name, why = exe[1], exe[2]
+    if vim.fn.executable(name) == 1 then
+      vim.health.ok(string.format("Found executable: '%s'", name))
     else
-      vim.health.warn(string.format("Could not find executable: '%s'", exe))
+      vim.health[level](string.format("Could not find executable: '%s' (%s)", name, why))
     end
   end
+end
 
-  return true
+local check_clipboard = function()
+  for _, exe in ipairs { 'wl-copy', 'xclip', 'xsel', 'pbcopy', 'win32yank.exe' } do
+    if vim.fn.executable(exe) == 1 then
+      vim.health.ok(string.format("Found clipboard tool: '%s'", exe))
+      return
+    end
+  end
+  vim.health.warn('No clipboard tool found', 'Install wl-clipboard (Wayland) or xclip (X11) to sync with the system clipboard.')
 end
 
 return {
@@ -47,6 +69,21 @@ return {
     vim.health.info('System Information: ' .. vim.inspect(uv.os_uname()))
 
     check_version()
-    check_external_reqs()
+    check_tree_sitter_cli()
+    check_exes({
+      { 'git', 'plugin installs' },
+      { 'cc', 'building treesitter parsers' },
+      { 'curl', 'downloads for treesitter and mason' },
+      { 'tar', 'treesitter parser downloads' },
+      { 'unzip', 'mason package installs' },
+      { 'rg', 'grep pickers' },
+      { 'npm', 'mason installs pyright, prettierd, tailwind and typescript' },
+    }, 'error')
+    check_exes({
+      { 'make', 'LuaSnip regex support' },
+      { 'fd', 'faster file pickers' },
+      { 'go', 'Go debugging (delve)' },
+    }, 'warn')
+    check_clipboard()
   end,
 }

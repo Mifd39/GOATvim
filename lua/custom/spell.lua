@@ -27,7 +27,8 @@ function M.toggle_spell()
   end
 end
 
--- Set up keybinding
-vim.keymap.set('n', '<leader>sp', M.toggle_spell, { desc = '[S]pell [P]check Toggle' })
+-- Set up keybinding (cycles English -> Danish -> off).
+-- Lives in the <leader>u toggle group; <leader>sp is the projects picker.
+vim.keymap.set('n', '<leader>us', M.toggle_spell, { desc = 'Toggle spell (en/da/off)' })
 
 return M

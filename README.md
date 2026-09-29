@@ -1,120 +1,146 @@
 <h1 align="center">🐐 GOATvim</h1>
 
 <p align="center">
-  <em>A highly curated, blazing-fast, and modern Neovim configuration built for maximum developer productivity.</em>
+  <em>A curated, fast Neovim configuration built on kickstart.nvim.</em>
 </p>
 
 ---
 
-## 🌟 Philosophy
-
-**GOATvim** is designed to be a complete IDE replacement out of the box, focusing on speed, aesthetics, and modern Neovim features (0.10+). It bridges the gap between lightweight configurations and heavy distributions by providing a carefully selected set of powerful tools with sane, comfortable defaults.
-
-- **Speed First:** Lazy-loaded plugins via `lazy.nvim` to keep startup times minimal.
-- **Modern UI:** Clean, distraction-free interface powered by `noice.nvim`, `dressing.nvim`, and `snacks.nvim`.
-- **Intelligent Coding:** AI-assisted completions with Gemini, blazing fast LSP, and modern syntax highlighting.
-- **Surgical Navigation:** Jump anywhere instantly with `flash.nvim` and navigate project structures efficiently.
-
----
-
-## 📦 What's Inside?
+## 📦 What's inside
 
 ### Core & UI
-- **[lazy.nvim](https://github.com/folke/lazy.nvim):** The best package manager for Neovim.
-- **[snacks.nvim](https://github.com/folke/snacks.nvim):** Provides a beautiful dashboard, pickers, and scratch buffers.
-- **[noice.nvim](https://github.com/folke/noice.nvim):** Replaces the UI for messages, cmdline, and the popupmenu.
-- **[dressing.nvim](https://github.com/stevearc/dressing.nvim):** Improves standard Neovim UI interfaces.
-- **[mini.nvim](https://github.com/echasnovski/mini.nvim):** A suite of modules providing `mini.sessions`, `mini.surround`, `mini.ai`, and a clean statusline.
+- **[lazy.nvim](https://github.com/folke/lazy.nvim)**: plugin manager, pinned via `lazy-lock.json`
+- **[snacks.nvim](https://github.com/folke/snacks.nvim)**: dashboard, pickers, explorer, notifications, indent guides, terminal, scratch buffers
+- **[noice.nvim](https://github.com/folke/noice.nvim)**: cmdline and message UI
+- **[mini.nvim](https://github.com/echasnovski/mini.nvim)**: `mini.ai`, `mini.surround`, `mini.sessions`, `mini.icons`, statusline
+- **[catppuccin](https://github.com/catppuccin/nvim)**: colorscheme
 
-### Navigation & Search
-- **[Telescope](https://github.com/nvim-telescope/telescope.nvim) / Snacks Pickers:** Fuzzy find everything (files, buffers, grep, git history).
-- **[flash.nvim](https://github.com/folke/flash.nvim):** Navigate your code with search labels, enhanced `f`/`t` motions, and Treesitter integration.
-- **[trouble.nvim](https://github.com/folke/trouble.nvim):** A pretty list for showing diagnostics, references, and quickfix lists.
-- **[grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim):** Powerful find and replace across your entire project.
+### Navigation & search
+- **Snacks pickers**: files, grep, buffers, LSP, git, help, keymaps
+- **[flash.nvim](https://github.com/folke/flash.nvim)**: jump anywhere with labels
+- **[harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)**: pin files and jump between them
+- **[oil.nvim](https://github.com/stevearc/oil.nvim)**: edit the filesystem like a buffer
+- **[trouble.nvim](https://github.com/folke/trouble.nvim)**: diagnostics, references and quickfix lists
+- **[grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim)**: project-wide find and replace
 
-### Development & LSP
-- **Native LSP & Treesitter:** Pre-configured for deep semantic understanding, intelligent underlines, and context awareness (via `treesitter-context`).
-- **[blink.cmp](https://github.com/Saghen/blink.cmp):** Blazing fast completion engine.
-- **[conform.nvim](https://github.com/stevearc/conform.nvim):** Lightweight yet powerful formatter setup.
-- **[gemini.nvim](https://github.com/kiddos/gemini.nvim):** AI-powered code completion and chat (disabled by default, toggleable).
-- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim):** Beautiful markdown rendering inside Neovim.
-
----
-
-## ⌨️ Essential Keybindings
-
-GOATvim uses `<Space>` as the leader key.
-
-### General & Files
-| Keymap | Action |
-|--------|--------|
-| `<leader>e` | Open File Explorer (Snacks) |
-| `<leader>s` | Select & Restore Session (`mini.sessions`) |
-| `<leader><space>` | Smart Find Files |
-| `<leader>/` | Live Grep Project |
-| `<leader>,` | Switch Buffers |
-| `<leader>bd` | Delete current buffer |
-| `<leader>z` | Toggle Zen Mode |
-
-### Code Navigation (LSP & Trouble)
-| Keymap | Action |
-|--------|--------|
-| `gd` | Go to Definition |
-| `gr` | Go to References |
-| `gI` | Go to Implementation |
-| `gy` | Go to Type Definition |
-| `gra` | Open Code Actions (Visual inline diagnostics) |
-| `<leader>xx` | Toggle Trouble (Diagnostics List) |
-
-### AI & Formatting
-| Keymap | Action |
-|--------|--------|
-| `<leader>gt` | Toggle Gemini AI Completion/Hints |
-| `<leader>f` | Format current buffer (Conform) |
-
-### Movement (Flash)
-| Keymap | Action |
-|--------|--------|
-| `s` | Flash search (Jump to any word on screen) |
-| `S` | Flash Treesitter (Select syntax nodes visually) |
+### Development
+- **Native LSP** with [Mason](https://github.com/mason-org/mason.nvim): installs servers automatically (Lua, Python, C/C++, Tailwind)
+- **[typescript-tools.nvim](https://github.com/pmizio/typescript-tools.nvim)**: TypeScript / JavaScript / SolidJS
+- **[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)** (`main` branch) + treesitter-context
+- **[blink.cmp](https://github.com/Saghen/blink.cmp)**: completion, with LuaSnip + friendly-snippets
+- **[conform.nvim](https://github.com/stevearc/conform.nvim)**: format on save (stylua, prettierd)
+- **[nvim-lint](https://github.com/mfussenegger/nvim-lint)**: markdownlint
+- **[nvim-dap](https://github.com/mfussenegger/nvim-dap)** + dap-ui: debugging
+- **[gitsigns](https://github.com/lewis6991/gitsigns.nvim)**: git hunks in the gutter
+- **[render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)**: markdown rendering in the buffer
+- English / Danish spell checking (`<leader>us` cycles en → da → off)
 
 ---
 
 ## 🚀 Installation
 
 ### Prerequisites
-1. **Neovim** (v0.10.0 or newer)
-2. **Git**, **Make**, **C Compiler**, **unzip**
-3. **Ripgrep** (`rg`) - for fast text searches
-4. **Nerd Font** - for beautiful icons in the UI and terminal
-5. **eza** - modern replacement for `ls`
+
+| Tool | Why |
+|------|-----|
+| **Neovim 0.12+** | required by nvim-treesitter's `main` branch |
+| **tree-sitter-cli 0.26.1+** | builds syntax parsers (install it natively, **not** from npm) |
+| git, a C compiler, curl, tar, unzip | plugins, parsers and Mason packages |
+| ripgrep (`rg`) | grep pickers |
+| Node.js + npm | Mason installs pyright, prettierd, Tailwind and TypeScript with it |
+| a [Nerd Font](https://www.nerdfonts.com/) | icons (set in your terminal) |
+| *optional:* make, fd, wl-clipboard / xclip, go | LuaSnip regex, faster file search, system clipboard, Go debugging |
+
+**Arch / Manjaro**
+```bash
+sudo pacman -S --needed neovim tree-sitter-cli git base-devel curl tar unzip ripgrep fd nodejs npm wl-clipboard
+```
+
+**Fedora**
+```bash
+sudo dnf install neovim tree-sitter-cli git gcc make curl tar unzip ripgrep fd-find nodejs npm wl-clipboard
+```
+
+**Debian / Ubuntu** (the packaged Neovim is too old, so install it from the release tarball)
+```bash
+sudo apt install git build-essential curl tar unzip ripgrep fd-find nodejs npm xclip
+# Neovim
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz && sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+# tree-sitter CLI (needs Rust: https://rustup.rs)
+cargo install --locked tree-sitter-cli
+```
+
+Any distro can check its versions with `nvim --version` and `tree-sitter --version`.
 
 ### Setup
 
-Clone this repository directly into your Neovim configuration directory:
-
 ```bash
-# Backup existing config if you have one
-mv ~/.config/nvim ~/.config/nvim.backup
-mv ~/.local/share/nvim ~/.local/share/nvim.backup
-mv ~/.local/state/nvim ~/.local/state/nvim.backup
-mv ~/.cache/nvim ~/.cache/nvim.backup
-
-# Clone GOATvim
-git clone git@github.com:Mifd39/GOATvim.git ~/.config/nvim
-
-# Open Neovim
-nvim
+git clone https://github.com/Mifd39/GOATvim.git ~/GOATvim
+cd ~/GOATvim
+./install.sh            # becomes your main config (an existing one is backed up, never deleted)
+# or
+./install.sh goatvim    # installs side by side: run it with `NVIM_APPNAME=goatvim nvim`
 ```
-*Upon launching, `lazy.nvim` will automatically bootstrap and install all configured plugins.*
+
+The installer checks prerequisites and symlinks the repo into `~/.config`, so `git pull` updates your config.
+On first launch, wait for lazy.nvim, the treesitter parsers and Mason to finish installing, then run
+`:checkhealth kickstart` to confirm everything is in place.
+
+---
+
+## ⌨️ Essential keybindings
+
+Leader is `<Space>`. Press it and wait to see every mapping (which-key).
+
+### Files & search
+| Keymap | Action |
+|--------|--------|
+| `<leader><space>` | Smart find files |
+| `<leader>/` | Grep project |
+| `<leader>,` | Buffers |
+| `<leader>e` | File explorer (snacks) |
+| `-` | Open parent directory (oil) |
+| `<leader>sf` / `sg` / `sr` / `sh` / `sk` | Files / grep / recent / help / keymaps |
+| `<leader>sR` | Resume last picker |
+| `<leader>a`, `<C-e>`, `<leader>1-4` | Harpoon: add, menu, jump |
+
+### Code
+| Keymap | Action |
+|--------|--------|
+| `gd` / `gr` / `gI` / `gy` | Definition / references / implementation / type definition |
+| `grn` / `gra` | Rename / code action |
+| `<leader>f` | Format buffer |
+| `<leader>xx` | Diagnostics (Trouble) |
+| `<leader>rr` / `rw` / `rf` | Find & replace: project / word / file |
+| `<C-i>` | Accept completion |
+
+### Editing & motion
+| Keymap | Action |
+|--------|--------|
+| `s` / `S` | Flash jump / Flash treesitter |
+| `gsa` / `gsd` / `gsr` | Surround add / delete / replace |
+
+### Git
+| Keymap | Action |
+|--------|--------|
+| `]h` / `[h` | Next / previous hunk |
+| `<leader>hs` / `hr` / `hp` | Stage / reset / preview hunk |
+| `<leader>gs` / `gl` / `gd` | Status / log / diff pickers |
+
+### Toggles (`<leader>u`)
+`us` spell (en/da/off) · `uw` wrap · `uh` inlay hints · `ud` diagnostics · `um` markdown render · `uL` relative numbers
+
+### Debug
+`<F5>` start/continue · `<F1>/<F2>/<F3>` step into/over/out · `<leader>db` breakpoint · `<leader>du` UI
 
 ---
 
 ## ⚙️ Customization
 
-GOATvim is highly modular. You can easily add or modify plugins in the `lua/custom/plugins/` directory:
-- To add a new plugin, simply create a new `.lua` file returning a lazy plugin spec inside `lua/custom/plugins/`.
-- The main configuration is driven from `init.lua`.
+- Add plugins as new files in `lua/custom/plugins/`, each returning a lazy.nvim spec.
+- Core options, LSP servers and treesitter languages live in `init.lua`.
+- After adding or removing plugins, run `:Lazy sync` and commit `lazy-lock.json`.
 
 ---
-<p align="center"><i>Happy Hacking!</i> 🐐</p>
+<p align="center"><i>Happy hacking!</i> 🐐</p>

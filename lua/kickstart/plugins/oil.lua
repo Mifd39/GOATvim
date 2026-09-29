@@ -3,9 +3,8 @@
 
 return {
   'stevearc/oil.nvim',
+  -- Icons come from mini.icons (set up in init.lua)
   opts = {
-    -- Optional dependencies
-    dependencies = { { 'nvim-tree/nvim-web-devicons', opts = {} } },
     -- Configuration for oil.nvim
     columns = {
       'icon',
@@ -38,11 +37,14 @@ return {
       ['g?'] = 'actions.show_help',
       ['<CR>'] = 'actions.select',
       ['<C-s>'] = 'actions.select_vsplit',
-      ['<C-h>'] = 'actions.select_split',
+      ['<C-x>'] = 'actions.select_split',
       ['<C-t>'] = 'actions.select_tab',
       ['<C-p>'] = 'actions.preview',
       ['<C-c>'] = 'actions.close',
-      ['<C-l>'] = 'actions.refresh',
+      ['<C-r>'] = 'actions.refresh',
+      -- Keep <C-h>/<C-l> free for window navigation, even inside Oil.
+      ['<C-h>'] = false,
+      ['<C-l>'] = false,
       ['-'] = 'actions.parent',
       ['_'] = 'actions.open_cwd',
       ['`'] = 'actions.cd',
@@ -52,7 +54,6 @@ return {
       ['g.'] = 'actions.toggle_hidden',
       ['g\\'] = 'actions.toggle_trash',
     },
-    -- Set to true to watch the filesystem for changes
     use_default_keymaps = true,
     view_options = {
       -- Show files and directories that start with "."

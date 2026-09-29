@@ -3,14 +3,18 @@ undo/
 swap/
 backup/
 shada/
-tags
+doc/tags
 .netrwhist
-*.spl
+Session.vim
+# Spell word lists you add with `zg` are personal; the Danish dictionary is not
+spell/*.add
+spell/*.add.spl
 *.sug
-lazy-lock.json
+
+# lazy-lock.json is committed on purpose: it pins every plugin to the commit
+# that is known to work, so a fresh install matches this config.
 
 # LSP / Language Servers
-.null-ls_*
 .luarc.json
 .nvim.lua
 

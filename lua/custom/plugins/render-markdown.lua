@@ -2,25 +2,21 @@ return {
   {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
     opts = {
       heading = {
-        -- 'simple' is very minimal. 'block' gives headers a background color for that "Modern" feel.
         sign = false,
         position = 'inline',
         icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
       },
       code = {
         enabled = true,
-        style = 'full', -- Adds background and border to code blocks
+        style = 'full',
         border = 'thin',
       },
       pipe_table = {
-        preset = 'round', -- Replaces ASCII | with smooth rounded Unicode pipes
+        preset = 'round',
       },
       callout = {
-        -- Support for GitHub style > [!NOTE] blocks
         note = { icon = '󰋽 ', highlight = 'RenderMarkdownInfo' },
         tip = { icon = '󰌶 ', highlight = 'RenderMarkdownSuccess' },
         important = { icon = '󰅒 ', highlight = 'RenderMarkdownHint' },
